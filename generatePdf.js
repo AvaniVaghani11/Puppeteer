@@ -45,28 +45,11 @@ async function generateAndSavePdf(htmlContent) {
       fs.mkdirSync(folder, { recursive: true });
     }
 
-    async function getUniqueFileName(baseFilename) {
-      let uniqueFilename = baseFilename;
-      var filePath = path.join(folder, uniqueFilename);
-
-      while (fs.existsSync(filePath)) {
-        const regex = /(?: \((\d+)\))?\.pdf$/;
-        const match = regex.exec(baseFilename);
-        const number = match ? parseInt(match[1] || "0", 10) + 1 : 1;
-        uniqueFilename = `generated_document (${number}).pdf`;
-        filePath = path.join(folder, uniqueFilename);
-      }
-
-      return uniqueFilename;
-    }
-
     const pdfBuffer = await generatePdfFromHtml(htmlContent);
-
-    const newFileName = await getUniqueFileName(baseFilename);
+    const newFileName = `${Date.now()}-${baseFilename}`;
     const filePath = path.join(folder, newFileName);
 
     fs.writeFileSync(filePath, pdfBuffer);
-    console.log(newFileName);
 
     return newFileName;
   } catch (error) {

@@ -39,6 +39,23 @@ app.get("/get/:filename", async (req, res) => {
   }
 });
 
+app.get("/get/:filename", async (req, res) => {
+  try {
+    const { filename } = req.params;
+    const filePath = path.join(__dirname, "files", filename);
+    if (!fs.existsSync(filePath)) {
+      res.statusCode = 404;
+      res.end(`File not found: ${filename}`);
+      return;
+    }
+
+    const fileStream = fs.createReadStream(filePath);
+    fileStream.pipe(res);
+  } catch (error) {
+    return res.status(500).json({ error, message: error.message });
+  }
+});
+
 const port = 5757;
 
 app.listen(port, () => {
